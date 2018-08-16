@@ -1,0 +1,108 @@
+Sub 创建工作表目录()
+    Application.ScreenUpdating = False
+    On Error Resume Next
+    Application.DisplayAlerts = False
+    Sheets("000目录").Delete
+    Application.DisplayAlerts = True
+    Sheets.Add(after:=Sheets(Sheets.Count)).Name = "000目录"
+    Range("A1:B1") = [{"编号","目录"}]
+    For i = 1 To Sheets.Count
+        Cells(i + 1, 1).Value = i - 1
+        ActiveSheet.Hyperlinks.Add Anchor:=Cells(i + 1, 2), _
+            Address:="", SubAddress:=Sheets(i).Name & "!A1", _
+            TextToDisplay:=Sheets(i).Name, ScreenTip:="单击打开" & Sheets(i).Name
+        Next
+        Range("A2").Select
+        ActiveWindow.FreezePanes = True
+     
+     Columns("A:B").Select
+    Columns("A:B").EntireColumn.AutoFit
+    Columns("A:A").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Range("A1").Select
+End Sub
+
+
+
+Sub sortShtByName()
+Dim n As Integer
+Dim i As Integer
+Dim j As Integer
+Dim t As String
+Dim nSht() As String
+Application.ScreenUpdating = False
+n = Sheets.Count
+ReDim nSht(1 To n)
+For i = 1 To n
+    nSht(i) = Sheets(i).Name
+Next
+For i = 1 To n - 1
+    For j = i + 1 To n
+        If nSht(i) > nSht(j) Then
+            t = nSht(i)
+            nSht(i) = nSht(j)
+            nSht(j) = t
+        End If
+    Next
+Next
+For i = 1 To n
+    Sheets(nSht(i)).Move before:=Sheets(i)
+Next
+Sheets(1).Select
+Application.ScreenUpdating = True
+
+End Sub
+
+
+Sub 设置页眉页脚()
+
+    With ActiveSheet.PageSetup
+        .LeftHeader = ""
+        .CenterHeader = "&A"
+        .RightHeader = ""
+        .LeftFooter = ""
+        .CenterFooter = ""
+        .RightFooter = "&P/&N"
+    End With
+    With ActiveSheet.PageSetup
+        .LeftMargin = Application.InchesToPoints(0.32)
+        .RightMargin = Application.InchesToPoints(0.32)
+        .TopMargin = Application.InchesToPoints(0.6)
+        .BottomMargin = Application.InchesToPoints(0.38)
+       .Zoom = 100
+       End With
+    ActiveWindow.SelectedSheets.PrintPreview
+End Sub
+
+Sub 设置页眉页脚2()
+
+       With ActiveSheet.PageSetup
+        .LeftHeader = ""
+        .CenterHeader = "&A"
+        .RightHeader = ""
+        .LeftFooter = ""
+        .CenterFooter = ""
+        .RightFooter = "&P/&N"
+
+        .LeftMargin = Application.InchesToPoints(0.7)
+        .RightMargin = Application.InchesToPoints(0.6)
+        .TopMargin = Application.InchesToPoints(0.5)
+        .BottomMargin = Application.InchesToPoints(0.4)
+        .HeaderMargin = Application.InchesToPoints(0.2)
+        .FooterMargin = Application.InchesToPoints(0.2)
+        .Zoom = False
+        .FitToPagesWide = 1
+        .FitToPagesTall = 1
+    End With
+    
+End Sub
