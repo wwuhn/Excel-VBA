@@ -1,0 +1,129 @@
+Sub 动态设置行高()
+Dim rown As Integer
+Dim high As Integer
+Dim charlen As Integer
+Dim Lrow As Long
+'Dim Rng As Range
+Dim szs As Integer
+Dim zms As Integer
+
+Columns("B:B").WrapText = True
+Cells.EntireRow.AutoFit
+Range("A1").Select
+    
+Lrow = Range("B" & Cells.Rows.Count).End(xlUp).Row - 1
+For rown = 2 To Lrow + 1
+'Rng = Range("B" & rown)
+Set reg1 = CreateObject("VBSCRIPT.REGEXP")
+Set reg2 = CreateObject("VBSCRIPT.REGEXP")
+reg1.Pattern = "d{1}"
+reg2.Pattern = "[A-Za-z]{1}"
+reg1.Global = True
+reg2.Global = True
+Set sz = reg1.Execute(Range("B" & rown))
+Set zm = reg2.Execute(Range("B" & rown))
+szs = sz.Count
+zms = zm.Count
+charlen = Len(Range("B" & rown)) - szs / 2 - zms / 2
+high = Application.Round(charlen / 50 + 0.5, 0) - 1
+Rows(rown & ":" & rown).Select
+Selection.RowHeight = 20 + high * 16
+Next rown
+Range("B2").Select
+End Sub
+
+Sub MoreKeySort()
+With ActiveSheet.Sort.SortFields
+    .Clear
+    .Add Key:=Range("A1"), SortOn:=xlSortOnValues, Order:=xlDescending
+    .Add Key:=Range("B1"), SortOn:=xlSortOnValues, Order:=xlDescending
+    .Add Key:=Range("C1"), SortOn:=xlSortOnValues, Order:=xlDescending
+    .Add Key:=Range("D1"), SortOn:=xlSortOnValues, Order:=xlDescending
+    'xlAscending
+    For Each rng In Range("A1:D1")
+        If rng = "" Then rng.Value = "添加标题"
+    Next rng
+End With
+With ActiveSheet.Sort
+    .SetRange Range("A1").CurrentRegion  '指定排序区域
+    .Header = xlYes '指定排序区域包含标题
+    .Apply      '应用工作表排序
+    
+End With
+End Sub
+
+
+'Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+Public Sub textcount()
+    Dim Target As Range
+    Dim 字符 As String, 字符数 As Long, 汉字 As Long, 字母 As Long, 数字 As Long, 其它符号
+    Dim rng As Range, Item As Integer, rngg As Range
+    '遍历选区，为了防止用户全选或者选列整列时造成的不必要的循环，使用Intersect方法让程序在非空区循环
+    If Intersect(Selection, ActiveSheet.UsedRange) Is Nothing Then Application.StatusBar = "": End
+    For Each rng In Intersect(Selection, ActiveSheet.UsedRange)
+        '汇总所有单元格的字符数
+        字符数 = 字符数 + Len(rng)
+        '逐一提取每个单元格中的每个字符
+        For i = 1 To Len(rng)
+            字符 = Mid(rng, i, 1)
+            '一到龥之间的都是汉字（仅适用于简体系统）
+            If 字符 Like "[一-龥]" = True Then
+                汉字 = 汉字 + 1    '汉字累加
+            ElseIf 字符 Like "[a-zA-Z]" = True Then
+                字母 = 字母 + 1    '字母累加
+            ElseIf 字符 Like "[0-9]" = True Then
+                数字 = 数字 + 1    '数字累加
+            Else
+                其它符号 = 其它符号 + 1
+            End If
+        Next
+    Next
+    Application.StatusBar = "字数：" & 字符数 + 0 & "个，其中：" & "汉字：" & 汉字 + 0 & "个，" & _
+                            "字母：" & 字母 + 0 & "个，" & "数字：" & 数字 + 0 & "个，" & "其它符号：" & 其它符号 + 0 & "个"
+    Application.OnTime Now + TimeValue("00:00:30"), "updateStatus"
+End Sub
+
+Sub updateStatus()
+    Application.StatusBar = ""
+
+End Sub
+
+Sub Filter_MoreCriteria()
+Dim Crit As Variant
+Application.ScreenUpdating = False
+With ActiveSheet
+    If .FilterMode = True Then .ShowAllData
+    .Range("A1").AutoFilter Field:=1, Criteria1:=">=2"
+    .Range("B1").AutoFilter Field:=2, Criteria1:="=*sheet*", Operator:=xlOr, Criteria2:=""
+    
+End With
+Application.ScreenUpdating = True
+End Sub
+
+Sub 显示或隐藏批注()
+Dim rng1 As Range, rng2 As Range
+On Error Resume Next
+Set rng1 = ActiveCell
+Set rng2 = ActiveSheet.Cells.SpecialCells(xlCellTypeComments)
+If rng2 Is Nothing Then Exit Sub
+If Not Application.Intersect(rng1, rng2) Is Nothing Then
+MsgBox "显示/隐藏当前单元格的批注。"
+rng1.Comment.Visible = Not (rng1.Comment.Visible)
+End If
+End Sub
+
+
+Sub 删除当前表中批注()
+Dim cm As Comment, str1 As String
+Dim i As Integer, j As Integer
+i = ActiveSheet.Comments.Count
+For Each cm In ActiveSheet.Comments
+j = j + 1
+str1 = "第" & j & "条/共" & i & "条批注" & vbCrLf & _
+"作者:" & cm.Author & vbCrLf & "批注内容:" & cm.Text & vbNewLine & vbNewLine
+str1 = str1 & "单击【是】按钮将删除该批注！"
+If MsgBox(str1, vbQuestion + vbYesNo) = vbYes Then
+cm.Delete
+End If
+Next
+End Sub
