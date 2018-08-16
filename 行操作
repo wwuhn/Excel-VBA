@@ -1,0 +1,137 @@
+Dim colwid(30) As Long
+Dim rowhei(120) As Long
+
+Function colsChar(i As Integer)
+    Dim j  As Integer
+    Dim s As String
+    s = Cells(1, i).Address
+    j = InStrRev(s, "$")
+    s = Left(s, j - 1)
+    colsChar = Right(s, Len(s) - 1)
+End Function
+
+
+Sub 首行标题和冻结及边框()
+    Dim str, str2 As String
+    Dim k As Integer
+    Dim j As Integer
+    ActiveWindow.FreezePanes = False
+    k = Cells.Columns.Count
+    str = colsChar(k)
+    str2 = Range(str & "1").End(xlToLeft).Address
+    j = InStrRev(str2, "$")
+    str2 = Left(str2, j - 1)
+    str2 = Right(str2, Len(str2) - 1)
+    Range("A1:" & str2 & "1").Select
+    With Selection.Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .ThemeColor = xlThemeColorLight2
+        .TintAndShade = 0.399945066682943
+        .PatternTintAndShade = 0
+    End With
+    With Selection.Font
+        .Name = "宋体"
+        .FontStyle = "常规"
+        .Size = 11
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = 0
+        .ThemeFont = xlThemeFontMinor
+    End With
+    Selection.Font.Bold = True
+    Range("A2").Select
+    ActiveWindow.FreezePanes = True
+    ActiveWindow.SmallScroll Down:=0
+    
+    ActiveSheet.UsedRange.Select
+    With Selection.Borders()
+        .LineStyle = xlContinuous
+        .ColorIndex = xlAutomatic
+        .TintAndShade = 0
+        .Weight = xlHairline
+    End With
+    ActiveWindow.DisplayGridlines = False
+    [A1].Select
+End Sub
+
+
+
+Sub 批量删除空行_先选定列()
+    Dim rown As Long
+    If Selection.Count < 2 Then Exit Sub       '如果选区不是Range对象就退出程序
+    For rown = Cells(Rows.Count, "A").End(xlUp).Row To 2 Step -1
+        If WorksheetFunction.CountA(Intersect(Rows(rown), Selection)) = 0 Then
+          Rows(rown).Delete Shift:=xlShiftUp
+        End If
+    Next rown
+End Sub
+
+Sub insertBlankRow()
+    Dim rowsn As Integer
+    Dim n As Integer
+    Dim k As Long
+    n = 1 '如果想每隔3行插入1行，此处更改为n=3
+    rowsn = Int(Range("A" & Cells.Rows.Count).End(xlUp).Row / n)
+    For i = 2 To rowsn
+        Rows(i * n + 1 + k).Insert
+        k = k + 1
+    Next i
+    
+End Sub
+
+
+Sub DeleteBlankRow()
+Dim firstRow As Long
+Dim LastRow As Long
+Dim i As Long
+firstRow = ActiveSheet.UsedRange.Row
+LastRow = firstRow + ActiveSheet.UsedRange.Rows.Count - 1
+For i = LastRow To firstRow Step -1
+    If Application.WorksheetFunction.CountA(Rows(i)) = 0 Then
+        Rows(i).Delete
+    End If
+Next i
+End Sub
+
+
+
+'在工作簿的任一表格中获取行高列宽数据存到模块级数组中
+Sub getsize()
+    Dim j As Long
+    For j = 1 To 30
+        colwid(j - 1) = Columns(j).ColumnWidth
+    Next
+    Dim i As Long
+    For i = 1 To 120
+        rowhei(i - 1) = Range("A" & i).RowHeight
+    Next
+End Sub
+
+Sub setsize()
+    Dim j As Long
+    For j = 1 To 30
+        Columns(j).ColumnWidth = colwid(j - 1)
+    Next
+    Dim i As Long
+    For i = 1 To 120
+        Range("A" & i).RowHeight = rowhei(i - 1)
+    Next
+End Sub
+
+
+'以下过程用不了，不能用ActiveWorkbook
+Sub copycolWidth20()
+    Dim j As Long
+    For j = 1 To 20
+'ActiveWorkbook.Worksheet(1).Cells(1, i).ColumnWidth = ActiveWorkbook.Worksheet(2).Cells(1, i).ColumnWidth
+ActiveWorkbook.Worksheets(1).Columns(i).ColumnWidth = ActiveWorkbook.Worksheets(2).Columns(i).ColumnWidth
+'ActiveWorkbook.Worksheet(1).Cells(1, i).Width = ActiveWorkbook.Worksheet(2).Cells(1, i).Width
+'ActiveWorkbook.Worksheet(1).Cells(1, i).Width = ActiveWorkbook.Worksheet(2).Cells(1, i).Width
+    Next
+End Sub
