@@ -1,0 +1,72 @@
+Sub 引用工作簿()
+    Dim wb As Workbook
+    Set wb = Workbooks(1)  '通过索引引用
+    On Error Resume Next
+    Set wb = Workbooks("excelVBA实例.xlsm")  '通过工作簿名称引用
+    Set wb = ActiveWorkbook '引用当前的活动工作簿
+    
+    Set wb = Workbooks(Workbooks.Count)  '引用最后打开的工作簿
+    Set wb = ThisWorkbook  '引用当前宏代码运行的工作簿
+    Set wb = Workbooks.Add  '引用新建的工作簿
+    
+    '引用包含特定工作表的工作簿
+    For i = 1 To Workbooks.Count
+        For j = 1 To Workbooks(i).Worksheets.Count
+            If Workbooks(i).Worksheets(j).Name = "000目录1" Then
+                Set wb = Workbooks(i)
+                GoTo rightGo
+            End If
+        Next j
+    Next i
+    'Debug.Print ("no such workbook with such worksheet")
+    'Exit Sub
+rightGo:
+    Debug.Print ("引用的工作簿是：" & wb.Name)
+    Set wb = Nothing
+End Sub
+
+
+Sub 引用工作表()
+    Dim wb As Workbook
+    Dim ws As Worksheet
+    
+    Set wb = ThisWorkbook
+    Set ws = wb.Sheets(1)  '通过表索引号引用工作表
+
+    Set ws = wb.Worksheets(1)  '通过工作表索引号引用工作表
+    Set ws = wb.Worksheets("000目录")  '通过工作表名称引用
+    Set ws = wb.ActiveSheet  '引用当前活动工作表
+    Set ws = wb.Worksheets(Worksheets.Count)  '引用最后一个工作表
+    
+    '引用特定单元格区域名称的工作表
+    On Error Resume Next
+    Set ws = wb.Worksheets.Add(after:=Sheets(Sheets.Count))
+    wsName = wb.Names("目录").RefersToRange.Parent.Name
+    
+    Debug.Print (wsName)
+    
+    '引用多个工作表
+    Dim ss As Sheets
+    Set ss = wb.Worksheets(Array("sheet1", "sheet2", "sheet3"))
+    Set ss = wb.Worksheets(Array("sheet1", "sheet2", "sheet3"))
+    ss.Select
+    Debug.Print (ws.Name)
+    
+    Set ws = Nothing
+    Set wb = Nothing
+End Sub
+
+
+
+Sub 引用工作簿窗口()
+    Dim wd As Window
+    Set wd = Windows(1)
+    Set wd = ActiveWindow
+    Debug.Print (wd.Caption)
+    Debug.Print (wd.Split)
+    Debug.Print (wd.FreezePanes)
+    Debug.Print (wd.DisplayGridlines)
+    
+    Set wd = Nothing
+    
+End Sub
