@@ -1,0 +1,73 @@
+Sub 判断工作簿是否已经打开()
+Dim wb As Workbook
+Dim mywb As String
+mywb = "excelVBA实例.xlsm"
+For Each wb In Workbooks
+    If LCase(wb.Name) = LCase(mywb) Then
+        Debug.Print ("already open!")
+    End If
+Next
+End Sub
+
+Sub 判断工作簿是否已经打开2()
+Dim bookIsOpen As Boolean
+Dim eb As Excel.Workbook
+Dim mywb As String
+mywb = "excelVBA实例.xlsm"
+Err.Clear
+On Error Resume Next
+Set eb = Application.Workbooks(mywb)
+bookIsOpen = Not eb Is Nothing
+Err.Clear
+On Error GoTo 0
+If bookIsOpen Then
+    Debug.Print ("already be open!")
+Else
+    Debug.Print ("not open!")
+End If
+Set eb = Nothing
+    
+End Sub
+
+Sub 判断工作簿是否以只读方式打开()
+Dim wb As Workbook
+Set wb = Workbooks("excelVBA实例.xlsm")
+If wb.ReadOnly = True Then
+    Debug.Print ("opened with read-only mode!")
+Else
+    Debug.Print ("opened not with read-only mode!")
+End If
+End Sub
+
+Sub 判断工作簿是否已经保存()
+Dim wb As Workbook
+Dim mywb As String
+mywb = "excelVBA实例.xlsm"
+On Error Resume Next
+Set wb = Workbooks("excelVBA实例.xlsm")
+On Error GoTo 0
+If wb Is Nothing Then
+    Debug.Print ("the workbook is not exist!")
+    Exit Sub
+End If
+If wb.Path = "" Then
+    degug.Print ("the workbook not be saved!")
+Else
+
+    Debug.Print ("The time be saved is " & wb.BuiltinDocumentProperties("Last Save Time"))
+End If
+Set wb = Nothing
+End Sub
+
+
+Sub 判断工作簿是否已经保2存()
+Dim wb As Workbook
+Set wb = Workbooks("excelVBA实例.xlsm")
+
+If Not wb.Saved Then
+    Debug.Print ("have chanded,and the workbook be saved!")
+Else
+    Debug.Print ("have not changed!")
+End If
+Set wb = Nothing
+End Sub
