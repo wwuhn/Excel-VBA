@@ -1,0 +1,209 @@
+Sub chartest()
+    Debug.Print Asc(Left(Range("A1"), 1))
+    Dim s, s2 As String
+    s = Range("A1").Value
+    s2 = ""
+    For i = 1 To Len(s)
+        If Not Asc(Mid(s, i, 1)) = 63 Then
+            s2 = s2 + Mid(s, i, 1)
+        End If
+    Next i
+    [A3] = s2
+    
+End Sub
+
+Sub sssddd()
+        
+    With CreateObject("vbscript.regexp")
+        .Pattern = "\?"
+        Set mh = .Execute(s)
+        s = .Replace(s, "")
+    End With
+End Sub
+
+Sub 首字符替换()
+Dim rng As Range
+    For Each rng In Selection
+        'If Left(rng.Value, 1) = "。" Then                     '首字符判断
+        If rng.Value Like "。*" Then                           '首字符判断
+            'rng.Value = "“" + Right(rng.Value, Len(rng.Value) - 1)
+            ' ↑ 用截取+连接进行进行替换
+            'rng.Value = Replace(rng.Value, "。", "“", 1, 1)  ' 用replace进行替换
+            Dim str As String
+            str = rng.Value
+            Mid(str, 1, 1) = "“"                              '用mid进行替换
+            rng.Value = str
+        End If
+    Next
+End Sub
+
+
+
+Sub middot()
+    ActiveCell.Replace What:="？", Replacement:="·"
+    ActiveCell.Replace What:="·”", Replacement:="？”"
+End Sub
+
+Sub copyc3()
+
+    On Error Resume Next
+    Application.DisplayAlerts = False
+    Sheets("en").Delete
+    Sheets("cn").Delete
+    Application.DisplayAlerts = True
+    Worksheets("encn22").Select
+    Range("A1").Select
+    Worksheets("222").Select
+    Range("C1").Select
+    Selection.Copy
+
+    'Range("C1:C117").Select
+    Dim Lrow As Long
+    Lrow = Range("A" & Cells.Rows.Count).End(xlUp).Row - 1 + 1
+    Range("C1: C" & Lrow).Select
+    
+    ActiveSheet.Paste
+    'Selection.Paste
+    Application.CutCopyMode = False
+    ActiveWorkbook.Save
+
+    Selection.Copy
+    Range("A1").Select
+    
+    
+End Sub
+
+
+Sub cntxt()
+
+    
+    '字符处理
+    Worksheets("cn").Select
+    Application.Run "PERSONAL.xlsb!DeleteBlankRow"
+    Cells.Replace What:="　　", Replacement:=""
+    Cells.Replace What:="　", Replacement:=""
+    Cells.Replace What:=" ", Replacement:=""
+    Cells.Replace What:="~?", Replacement:="？"
+    Cells.Replace What:="!", Replacement:="！"
+    Cells.Replace What:=",", Replacement:="，"
+    'Cells.Replace What:="？", Replacement:="·"
+    'Cells.Replace What:="·”", Replacement:="？”"
+    Cells.Replace What:="约翰?达什伍德", Replacement:="约翰·达什伍德"
+    Cells.Replace What:="约翰.里德", Replacement:="约翰·里德"
+    Cells.Replace What:=".? ", Replacement:=". "
+    Cells.Replace What:="?? ", Replacement:="? "
+    Cells.Replace What:="简.爱", Replacement:="简·爱"
+    Cells.Replace What:="\3f", Replacement:=" "
+    '[]作上标处理
+    Cells.Replace What:="[", Replacement:="<sup>["
+    Cells.Replace What:="]", Replacement:="]</sup>"
+    Cells.Replace What:="(", Replacement:="<sup>("
+    Cells.Replace What:=")", Replacement:=")</sup>"
+   
+
+    
+    '选择复制
+    Worksheets("cn").Select
+    Dim Lrow As Long
+    Lrow = Range("A" & Cells.Rows.Count).End(xlUp).Row - 1 + 315
+    Range("A1: A" & Lrow).Select
+    Dim rng As Range
+    For Each rng In Selection
+        If Left(rng.Value, 1) = "。" Then
+            'rng.Value = "“" + Right(rng.Value, Len(rng.Value) - 1)
+            rng.Value = Replace(rng.Value, "。", "“", 1, 1)
+
+        End If
+        rng.Replace What:="　", Replacement:=""
+        rng.Value = Trim(rng.Value)
+        '处理文本中选择时好像是双字节的空格，但复制到这里却是？的字符
+        Dim ss, s2 As String
+        ss = rng.Value
+        s2 = ""
+        For i = 1 To Len(ss)
+            If Not Asc(Mid(ss, i, 1)) = 63 Then
+                s2 = s2 + Mid(ss, i, 1)
+            End If
+        Next i
+        
+        '上标处理
+        'With CreateObject("vbscript.regexp")
+            '.Pattern = "(\[.+?\])"  '用?做非贪婪匹配
+            'Set mh = .Execute(s2)
+            's2 = .Replace(s2, "<sup>$1</sup>")
+        'End With
+        rng = s2
+        
+    Next
+    Range("A1: A" & Lrow).Select
+    
+    Selection.Copy
+    Range("A1").Select
+    
+    '选择性粘贴
+    Sheets("encn").Activate
+    'Columns("A:A").Select
+    'Selection.ClearContents  '有此句导致：类Range的PasteSpecial方法无效
+    Range("B1") = ""
+
+    Range("B2").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    
+    Range("B1").Select
+    Sheets("encn").Name = "222"
+    ActiveWorkbook.Save
+End Sub
+
+
+
+Sub entxt()
+    '字符处理
+    Worksheets("en").Select
+    Application.Run "PERSONAL.xlsb!DeleteBlankRow"
+    Cells.Replace What:="　　", Replacement:=""
+    Cells.Replace What:="　", Replacement:=""
+    Cells.Replace What:="’", Replacement:="'"
+    Cells.Replace What:=".~? ", Replacement:=". "
+    'Cells.Replace What:="‘", Replacement:=""""
+    'Cells.Replace What:="'", Replacement:=""""
+    
+    
+    '选择复制
+    Worksheets("en").Select
+    Dim Lrow As Long
+    Lrow = Range("A" & Cells.Rows.Count).End(xlUp).Row - 1 + 315
+    Range("A1: A" & Lrow).Select
+    Dim rng As Range
+    For Each rng In Selection
+
+        Dim ss, s2 As String
+        ss = rng.Value
+        s2 = ""
+        For i = 1 To Len(ss)
+            If Not Asc(Mid(ss, i, 1)) = 63 Then
+                s2 = s2 + Mid(ss, i, 1)
+            End If
+        Next i
+        rng = s2
+        
+    Next
+    Selection.Copy
+    Range("A1").Select
+    
+    '选择性粘贴
+    Sheets("encn").Activate
+    'Columns("A:A").Select
+    'Selection.ClearContents  '有此句导致：类Range的PasteSpecial方法无效
+    Range("A1") = ""
+
+    Range("A2").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Dim str As String
+    Dim k As Long
+    str = ActiveWorkbook.Name
+    k = Len(str) - 4
+    Range("A1").Value = VBA.Left(str, k)
+    Range("A1").Select
+End Sub
