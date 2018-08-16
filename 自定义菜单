@@ -37,8 +37,20 @@ Sub ExcelSetting()
         .FormulaBarHeight = 1                      '设置编辑栏高度（1行高度）
         .ShowMenuFloaties = True                   '单元格右击后显示浮动工具栏
         
-        
-        
+    Dim wd As Window
+    Set wd = ActiveWindow
+    With wd
+        .DisplayGridlines = Not .DisplayGridlines
+        .DisplayFormulas = Not .DisplayFormulas
+        .DisplayHeadings = Not .DisplayHeadings
+        .DisplayHorizontalScrollBar = Not .DisplayHorizontalScrollBar
+        .DisplayVerticalScrollBar = Not .DisplayVerticalScrollBar
+        .DisplayZeros = Not .DisplayZeros
+        .Zoom = 100
+        .Visible = True
+        .GridlineColor = RGB(222, 222, 222)
+    End With
+    Set wd = Nothing
         
     End With
     ActiveWorkbook.RemovePersonalInformation = False    '保存时删除个人信息
