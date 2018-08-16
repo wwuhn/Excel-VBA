@@ -1,0 +1,117 @@
+Sub remark()
+    s = "<a href='#' title='"
+    s0 = [A1]
+    i = InStr(s0, "[")
+    Debug.Print i
+    s1 = Left(s0, i - 1)
+    t = ""
+    For j = i + 1 To Len(s0) - 1
+        t = t + Mid(s0, j, 1)
+        
+    Next j
+ 
+    s = s + t + "'>" + s1 + "</a>"
+    [a2] = s
+    [a2].Select
+    Selection.Copy
+
+End Sub
+
+
+Sub quotation()
+    Dim str As String
+    str = Trim(ActiveCell)
+    str = """" & str & """"
+    ActiveCell.Value = str
+    'ActiveCell.FormulaR1C1 = "=CONCATENATE("""""""",TRIM(RC[-2]),"""""""")"
+    
+End Sub
+
+
+Sub 合并内容到选区第一个单元格并清空其它()
+'先要选定需要合并的区域；
+Application.DisplayAlerts = False
+Dim allstr As String
+Dim str As Object
+If Selection.Cells.Count >= 2 Then
+
+    For Each str In Selection
+        If str.Value <> "" Then
+            allstr = allstr & "" & str.Value
+            allstr = Application.WorksheetFunction.Trim(allstr)
+            str.Value = ""
+        End If
+    Next str
+    
+    With Selection
+        .MergeCells = True
+        .Value = allstr
+        .WrapText = True
+        .HorizontalAlignment = xlGeneral
+        .VerticalAlignment = xlTop
+        .MergeCells = False
+    End With
+    ActiveCell.Offset(1, 0).Select
+    Selection.Delete Shift:=xlUp
+    Application.DisplayAlerts = True
+End If
+End Sub
+
+
+Sub 删除一格并上移()
+    Selection.Delete Shift:=xlUp
+End Sub
+Sub 插入一格()
+    Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+    'Selection.Value = Selection.Offset(0, 1)
+End Sub
+Sub clip()
+    Shell ("cmd /c @echo off | clip")
+End Sub
+
+Sub 尾部插入特定字符()
+    ActiveCell.Value = ActiveCell.Text & "……"""
+    
+End Sub
+
+'删除对象和超链接；
+Sub 删除形状()
+
+For Each sps In ActiveSheet.Shapes
+    sps.Delete
+Next sps
+End Sub
+
+Sub 删除超级链接()
+Dim X
+For Each X In ActiveSheet.Hyperlinks
+X.Delete
+Next X
+'Cells.Hyperlinks.Delete
+End Sub
+
+'设置文本单元格最后一个字符为上标
+Sub 设置单元格最后一个字符为上标()
+    Dim rng As Variant
+    Dim txtlength As Long
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    Selection.NumberFormatLocal = "@"
+    
+    For Each rng In Selection
+        If IsNumeric(rng.Value) = True Then
+        rng.Value = "'" & rng.Value
+        End If
+        txtlength = Len(rng)
+        '.Characters.Count
+        '只能对文本进此characters操作
+        If txtlength > 1 Then
+            rng.Characters(Start:=txtlength - 0, Length:=1).Font.Superscript = True
+        End If
+    Next rng
+End Sub
+'rng.prefixcharacter = "'"可以判断单元格值前面是否包含有符号","；
+
+'rng.numberformatlocal可以获得单元格格式；
